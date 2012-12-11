@@ -10,7 +10,13 @@ while( not $ldif->eof() ) {
 		print "Error msg: ", $ldif->error(), "\n";
 		print "Error lines:\n", $ldif->error_lines(), "\n";
 	} else {
-		$_ = join("\t", map { $_ eq 'dn' ? $entry->dn : defined $entry->get_value($_) ? $entry->get_value($_) : '' } @ARGV)."\n";
+		$_ = join("\t", map { $_ eq 'dn' ? $entry->dn : $_ eq 'ou' ? ou($entry->dn) : defined $entry->get_value($_) ? $entry->get_value($_) : '' } @ARGV)."\n";
 		print unless /^\s*$/;
 	}
+}
+
+sub ou {
+	local $_ = shift;
+	/^[^,]+,(.*?)$/;
+	return $1;
 }
